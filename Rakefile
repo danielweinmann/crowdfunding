@@ -1,7 +1,54 @@
-# Add your own tasks in files placed in lib/tasks ending in .rake,
-# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
-
-require File.expand_path('../config/application', __FILE__)
+require 'rubygems'
 require 'rake'
 
-Crowdfunding::Application.load_tasks
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gem|
+    gem.name = "crowdfunding"
+    gem.summary = %Q{Rails Engine for crowdfunding apps}
+    gem.description = %Q{The crowdfunding gem helps you to create a crowdfunding site, doing the hard part and leaving you the business and design part.}
+    gem.email = "danielweinmann@gmail.com"
+    gem.homepage = "http://github.com/danielweinmann/crowdfunding"
+    gem.authors = ["Daniel Weinmann"]
+    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
+    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+  end
+  Jeweler::GemcutterTasks.new
+rescue LoadError
+  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
+end
+
+require 'rake/testtask'
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/**/test_*.rb'
+  test.verbose = true
+end
+
+begin
+  require 'rcov/rcovtask'
+  Rcov::RcovTask.new do |test|
+    test.libs << 'test'
+    test.pattern = 'test/**/test_*.rb'
+    test.verbose = true
+  end
+rescue LoadError
+  task :rcov do
+    abort "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
+  end
+end
+
+task :test => :check_dependencies
+
+task :default => :test
+
+require 'rake/rdoctask'
+Rake::RDocTask.new do |rdoc|
+  version = File.exist?('VERSION') ? File.read('VERSION') : ""
+
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title = "crowdfunding #{version}"
+  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
